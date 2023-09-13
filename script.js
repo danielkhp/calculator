@@ -1,7 +1,7 @@
 let operand1
 let operand2
 let operator
-let displayValue = '123456789'
+let displayValue = ''
 
 let operators = {
   add:
@@ -26,6 +26,12 @@ function operate(operand1, operand2, operator) {
   return operators[operator](operand1, operand2)
 }
 
+function clearDisplay() {
+  displayValue = ''
+  const displayDiv = document.querySelector('.display')
+  displayDiv.textContent = displayValue
+}
+
 function populateDisplay(input) {
   displayValue = displayValue.concat(input)
   const displayDiv = document.querySelector('.display')
@@ -38,6 +44,8 @@ function handleButtonClick(e) {
   const reg = /[0-9]/
   if (reg.test(clicked)) {
     populateDisplay(clicked)
+  } else if (clicked === 'clear') {
+    clearDisplay()
   }
 }
 
