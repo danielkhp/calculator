@@ -1,6 +1,7 @@
 let operand1
 let operand2
 let operator
+let display
 
 let operators = {
   add:
@@ -23,4 +24,8 @@ let operators = {
 
 function operate(operand1, operand2, operator) {
   return operators[operator](operand1, operand2)
+}
+
+function populateDisplay(input) {
+  
 }
