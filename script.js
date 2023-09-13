@@ -40,11 +40,16 @@ function populateDisplay(input) {
 
 function handleButtonClick(e) {
   const clicked = e.target.id
-  // check if the button clicked was a number
+
   const reg = /[0-9]/
+  // check if the button clicked was a number
   if (reg.test(clicked)) {
     populateDisplay(clicked)
   } else if (clicked === 'clear') {
+    clearDisplay()
+  } else if (clicked in operators) {
+    operator1 = Number(displayValue)
+    operator = clicked
     clearDisplay()
   }
 }
