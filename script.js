@@ -3,7 +3,7 @@ let operand2
 let operator
 let displayValue = ''
 
-let operators = {
+const operators = {
   add:
     function add(a, b) {
       return (a + b)
@@ -23,7 +23,8 @@ let operators = {
 }
 
 function operate(operand1, operand2, operator) {
-  return operators[operator](operand1, operand2)
+  const result = operators[operator](operand1, operand2)
+  populateDisplay(result)
 }
 
 function clearDisplay() {
@@ -48,9 +49,13 @@ function handleButtonClick(e) {
   } else if (clicked === 'clear') {
     clearDisplay()
   } else if (clicked in operators) {
-    operator1 = Number(displayValue)
+    operand1 = Number(displayValue)
     operator = clicked
     clearDisplay()
+  } else if (clicked === 'equals') {
+    operand2 = Number(displayValue)
+    clearDisplay()
+    operate(operand1, operand2, operator)
   }
 }
 
