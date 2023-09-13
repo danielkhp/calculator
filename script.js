@@ -1,7 +1,7 @@
 let operand1
 let operand2
 let operator
-let display
+let displayValue = '123456789'
 
 let operators = {
   add:
@@ -27,5 +27,19 @@ function operate(operand1, operand2, operator) {
 }
 
 function populateDisplay(input) {
-  
+  displayValue = displayValue.concat(input)
+  const displayDiv = document.querySelector('.display')
+  displayDiv.textContent = displayValue
 }
+
+function handleButtonClick(e) {
+  const clicked = e.target.id
+  // check if the button clicked was a number
+  const reg = /[0-9]/
+  if (reg.test(clicked)) {
+    populateDisplay(clicked)
+  }
+}
+
+const buttons = document.querySelectorAll('button')
+buttons.forEach(button => button.addEventListener('click', handleButtonClick))
