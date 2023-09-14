@@ -1,6 +1,6 @@
-let operand1
-let operand2
-let operator
+let operands = []
+let operator = ''
+let miniDisplayValue = ''
 let displayValue = ''
 
 const operators = {
@@ -23,39 +23,55 @@ const operators = {
 }
 
 function operate(operand1, operand2, operator) {
-  const result = operators[operator](operand1, operand2)
+  let result = operators[operator](operand1, operand2)
   populateDisplay(result)
+
+  operands = []
+  operands.push(result)
+  operator = ''
+  displayValue = ''
+}
+
+function populateDisplay(input='') {
+  displayValue += input
+  const display = document.querySelector('.display')
+  display.textContent = displayValue
 }
 
 function clearDisplay() {
   displayValue = ''
-  const displayDiv = document.querySelector('.display')
-  displayDiv.textContent = displayValue
-}
-
-function populateDisplay(input) {
-  displayValue = displayValue.concat(input)
-  const displayDiv = document.querySelector('.display')
-  displayDiv.textContent = displayValue
+  populateDisplay()
 }
 
 function handleButtonClick(e) {
-  const clicked = e.target.id
-
+  const button = e.target.id
   const reg = /[0-9]/
-  // check if the button clicked was a number
-  if (reg.test(clicked)) {
-    populateDisplay(clicked)
-  } else if (clicked === 'clear') {
-    clearDisplay()
-  } else if (clicked in operators) {
-    operand1 = Number(displayValue)
-    operator = clicked
-    clearDisplay()
-  } else if (clicked === 'equals') {
-    operand2 = Number(displayValue)
-    clearDisplay()
-    operate(operand1, operand2, operator)
+
+  switch (true) {
+    case reg.test(button): // the button button was a number
+      populateDisplay(button)
+      break
+    case button in operators: // the button button was an operator
+      if (displayValue) {
+        operands.push(Number(displayValue))
+      }
+      clearDisplay()
+
+      if (operands.length === 2) {
+        operate(...operands, operator)
+      }
+
+      operator = button
+      break
+    case button === 'clear': // the button button was CLR
+      operands = []
+      operator = ''
+      clearDisplay()
+    case button === 'equals': // the button was equals
+      if ((operands.length < 2 && !displayValue) || !operator) return
+      operands.push(Number(displayValue))
+      clearDisplay()
+      operate(...operands, operator)
   }
 }
 
