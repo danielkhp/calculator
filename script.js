@@ -38,7 +38,6 @@ function operate(operand1, operand2, operator) {
   // reset after finishing a calculation but keep the result for further calculations
   clearAll()
   data.operands.push(result)
-
 }
 
 function populateDisplay(input = '') {
@@ -107,6 +106,16 @@ function handleButtonClick(e) {
       if (data.displayValue) {
         data.displayValue = data.displayValue.slice(0, -1)
         populateDisplay()
+      }
+    case button === 'negate': // the button was negate
+      if (data.displayValue) {
+        if (data.displayValue.includes('-')) {
+          data.displayValue = data.displayValue.slice(1)
+          populateDisplay()
+        } else {
+          data.displayValue = '-' + data.displayValue
+          populateDisplay()
+        }
       }
   }
 }
