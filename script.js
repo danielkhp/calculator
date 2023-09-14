@@ -1,9 +1,20 @@
+const OPERATOR_SYMBOLS = {
+  add: '&plus;',
+  subtract: '&minus;',
+  multiply: '&times;',
+  divide: '&divide;',
+}
+
 const data = {
   operands: [],
   operator: '',
   displayValue: '',
   miniDisplayValue: '',
+  clearPending: false,
 }
+
+const display = document.querySelector('.display')
+const miniDisplay = document.querySelector('.mini-display')
 
 const operators = {
   add:
@@ -27,31 +38,32 @@ const operators = {
 function operate(operand1, operand2, operator) {
   // special case for divide by zero
   if (operator === 'divide' && operand2 === 0) {
-    populateDisplay('Infinity')
-    clearAll()
+    clearData()
+    alert(`Can't divide by 0`)
     return
   }
 
-  let result = Number(operators[operator](operand1, operand2).toFixed(10)) // round to 10 decimal places but cast back to a number to remove trailing 0s
-  populateDisplay(result)
-
-  // reset after finishing a calculation but keep the result for further calculations
-  clearAll()
-  data.operands.push(result)
+  const result = operators[operator](operand1, operand2)
+  clearData()
+  data.clearPending = true
+  return result
 }
 
 function populateDisplay(input = '') {
   data.displayValue += input
-  const display = document.querySelector('.display')
   display.textContent = data.displayValue
-  const miniDisplay = document.querySelector('.mini-display')
-  miniDisplay.textContent = data.miniDisplayValue
+  const operand1 = data.operands[0] || ''
+  const operatorSymbol = OPERATOR_SYMBOLS[data.operator] || ''
+  data.miniDisplayValue = `${operand1} ${operatorSymbol}`
+  miniDisplay.innerHTML = data.miniDisplayValue
 }
 
-function clearAll() {
+function clearData() {
   data.operands = []
   data.operator = ''
   data.displayValue = ''
+  data.miniDisplayValue = ''
+  data.clearPending = false
 }
 
 function captureDisplayValue() {
@@ -65,49 +77,68 @@ function handleButtonClick(e) {
 
   switch (true) {
     case reg.test(button): // the button was a number
-      /* The situation checked for here can only happen after pressing equals
-      and yielding a result. The result is stored in case it needs to be used
-      for further calculation but if a number is pressed instead of an operator
-      button then assume the user wishes to start a fresh calculation and clear
-      the operands */
-      if (data.operands.length > 0 && !data.operator) {
-        data.operands = []
+      if (data.clearPending) {
+        data.displayValue = ''
+        data.clearPending = false
       }
       populateDisplay(button)
       break
     case button in operators: // the button was an operator
+      if (data.clearPending && data.operands.length > 0) {
+        data.displayValue = ''
+        data.clearPending = false
+      }
+
       if (data.displayValue) {
         captureDisplayValue()
       }
 
       if (data.operands.length === 2) {
-        operate(...data.operands, data.operator)
+        const result = operate(...data.operands, data.operator)
+        data.operands.push(result)
+        populateDisplay(result)
       }
 
       data.operator = button
+      populateDisplay()
       break
     case button === 'clear': // the button was CLEAR
-      clearAll()
+      clearData()
       populateDisplay()
       break
     case button === 'equals': // the button was =
       if (data.displayValue && data.operands.length === 1) {
         captureDisplayValue()
-        operate(...data.operands, data.operator)
+        const result = operate(...data.operands, data.operator)
+        populateDisplay(result)
       }
       break
     case button === 'decimal': // the button was .
+      if (data.clearPending) {
+        data.displayValue = ''
+        data.clearPending = false
+      }
+
       if (!data.displayValue.includes('.')) {
-        // must add 0 to ensure the result will be a number in case of no trailing digits
-        populateDisplay('0.')
+        if (data.displayValue) {
+          populateDisplay('.')
+        } else {
+          // must add 0 to ensure the result will be a number in case of no trailing digits
+          populateDisplay('0.')
+        }
       }
       break
     case button === 'delete': // the button was delete
+      data.clearPending = false
+
       if (data.displayValue) {
         data.displayValue = data.displayValue.slice(0, -1)
         populateDisplay()
       }
+      break
     case button === 'negate': // the button was negate
+      data.clearPending = false
+
       if (data.displayValue) {
         if (data.displayValue.includes('-')) {
           data.displayValue = data.displayValue.slice(1)
@@ -117,8 +148,8 @@ function handleButtonClick(e) {
           populateDisplay()
         }
       }
+      break
   }
 }
 
-const buttons = document.querySelectorAll('button')
-buttons.forEach(button => button.addEventListener('click', handleButtonClick))
+document.querySelectorAll('button').forEach(button => button.addEventListener('click', handleButtonClick))
