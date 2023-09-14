@@ -24,6 +24,15 @@ const operators = {
 }
 
 function operate(operand1, operand2, operator) {
+  // special case for divide by zero
+  if (operator === 'divide' && operand2 === 0) {
+    populateDisplay('Infinity')
+    operands = []
+    operator = ''
+    displayValue = ''
+    return
+  }
+
   let result = operators[operator](operand1, operand2)
   populateDisplay(result)
 
@@ -58,6 +67,7 @@ function handleButtonClick(e) {
       populateDisplay(button)
       break
     case button in operators: // the button button was an operator
+      if (!displayValue && operands.length === 0) return
       if (displayValue) {
         operands.push(Number(displayValue))
       }
