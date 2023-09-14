@@ -46,10 +46,13 @@ function populateDisplay(input = '') {
   data.displayValue += input
   const display = document.querySelector('.display')
   display.textContent = data.displayValue
+  const miniDisplay = document.querySelector('.mini-display')
+  miniDisplay.textContent = data.miniDisplayValue
 }
 
 function clearDisplay() {
   data.displayValue = ''
+  data.miniDisplayValue = ''
   populateDisplay()
 }
 
@@ -101,6 +104,11 @@ function handleButtonClick(e) {
           data.operands = []
         }
         populateDisplay('.')
+      }
+    case button === 'delete': // the button was delete
+      if (data.displayValue) {
+        data.displayValue = data.displayValue.slice(0, -1)
+        populateDisplay()
       }
   }
 }
