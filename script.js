@@ -3,7 +3,7 @@ const data = {
   operator: '',
   displayValue: '',
   miniDisplayValue: '',
-  clear: false,
+  clearPending: false,
 }
 
 const operators = {
@@ -29,24 +29,20 @@ function operate(operand1, operand2, operator) {
   // special case for divide by zero
   if (operator === 'divide' && operand2 === 0) {
     populateDisplay('Infinity')
-    data.operands = []
-    data.operator = ''
-    data.displayValue = ''
+    clearAll()
     return
   }
 
-  let result = operators[operator](operand1, operand2)
-  populateDisplay(Number(result.toFixed(10))) // round to 10 decimal places but cast back to a number to remove trailing 0s
+  let result = Number(operators[operator](operand1, operand2).toFixed(10)) // round to 10 decimal places but cast back to a number to remove trailing 0s
+  populateDisplay(result)
 
   // reset after finishing a calculation but keep the result for further calculations
-  data.operands = []
+  clearAll()
   data.operands.push(result)
-  data.operator = ''
-  data.displayValue = ''
-  data.clear = true
+  data.clearPending = true
 }
 
-function populateDisplay(input='') {
+function populateDisplay(input = '') {
   data.displayValue += input
   const display = document.querySelector('.display')
   display.textContent = data.displayValue
@@ -57,19 +53,25 @@ function clearDisplay() {
   populateDisplay()
 }
 
+function clearAll() {
+  data.operands = []
+  data.operator = ''
+  data.displayValue = ''
+}
+
 function handleButtonClick(e) {
   const button = e.target.id
   const reg = /[0-9]/
 
   switch (true) {
-    case reg.test(button): // the button button was a number
-      if (data.clear) {
-        data.clear = !data.clear
+    case reg.test(button): // the button was a number
+      if (data.clearPending) {
+        data.clearPending = !data.clearPending
         data.operands = []
       }
       populateDisplay(button)
       break
-    case button in operators: // the button button was an operator
+    case button in operators: // the button was an operator
       if (!data.displayValue && data.operands.length === 0) return
       if (data.displayValue) {
         data.operands.push(Number(data.displayValue))
@@ -80,12 +82,12 @@ function handleButtonClick(e) {
         operate(...data.operands, data.operator)
       }
 
+      data.clearPending = false
       data.operator = button
       break
-    case button === 'clear': // the button button was CLR
-      data.operands = []
-      data.operator = ''
-      clearDisplay()
+    case button === 'clear': // the button was CLR
+      clearAll()
+      populateDisplay()
     case button === 'equals': // the button was equals
       if ((data.operands.length < 2 && !data.displayValue) || !data.operator) return
       data.operands.push(Number(data.displayValue))
