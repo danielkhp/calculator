@@ -34,7 +34,7 @@ function operate(operand1, operand2, operator) {
   }
 
   let result = operators[operator](operand1, operand2)
-  populateDisplay(result)
+  populateDisplay(result.toFixed(10))
 
   operands = []
   operands.push(result)
