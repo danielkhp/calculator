@@ -2,6 +2,7 @@ let operands = []
 let operator = ''
 let miniDisplayValue = ''
 let displayValue = ''
+let clear = false
 
 const operators = {
   add:
@@ -30,6 +31,7 @@ function operate(operand1, operand2, operator) {
   operands.push(result)
   operator = ''
   displayValue = ''
+  clear = true
 }
 
 function populateDisplay(input='') {
@@ -49,6 +51,10 @@ function handleButtonClick(e) {
 
   switch (true) {
     case reg.test(button): // the button button was a number
+      if (clear) {
+        clear = !clear
+        operands = []
+      }
       populateDisplay(button)
       break
     case button in operators: // the button button was an operator
