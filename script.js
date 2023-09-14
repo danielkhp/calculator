@@ -93,6 +93,15 @@ function handleButtonClick(e) {
       data.operands.push(Number(data.displayValue))
       clearDisplay()
       operate(...data.operands, data.operator)
+      break
+    case button === 'decimal': // the button was the decimal
+      if (!data.displayValue.includes('.')) {
+        if (data.clearPending) {
+          data.clearPending = !data.clearPending
+          data.operands = []
+        }
+        populateDisplay('.')
+      }
   }
 }
 
