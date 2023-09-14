@@ -1,8 +1,10 @@
-let operands = []
-let operator = ''
-let miniDisplayValue = ''
-let displayValue = ''
-let clear = false
+const data = {
+  operands: [],
+  operator: '',
+  displayValue: '',
+  miniDisplayValue: '',
+  clear: false,
+}
 
 const operators = {
   add:
@@ -27,30 +29,31 @@ function operate(operand1, operand2, operator) {
   // special case for divide by zero
   if (operator === 'divide' && operand2 === 0) {
     populateDisplay('Infinity')
-    operands = []
-    operator = ''
-    displayValue = ''
+    data.operands = []
+    data.operator = ''
+    data.displayValue = ''
     return
   }
 
   let result = operators[operator](operand1, operand2)
-  populateDisplay(result.toFixed(10))
+  populateDisplay(Number(result.toFixed(10))) // round to 10 decimal places but cast back to a number to remove trailing 0s
 
-  operands = []
-  operands.push(result)
-  operator = ''
-  displayValue = ''
-  clear = true
+  // reset after finishing a calculation but keep the result for further calculations
+  data.operands = []
+  data.operands.push(result)
+  data.operator = ''
+  data.displayValue = ''
+  data.clear = true
 }
 
 function populateDisplay(input='') {
-  displayValue += input
+  data.displayValue += input
   const display = document.querySelector('.display')
-  display.textContent = displayValue
+  display.textContent = data.displayValue
 }
 
 function clearDisplay() {
-  displayValue = ''
+  data.displayValue = ''
   populateDisplay()
 }
 
@@ -60,34 +63,34 @@ function handleButtonClick(e) {
 
   switch (true) {
     case reg.test(button): // the button button was a number
-      if (clear) {
-        clear = !clear
-        operands = []
+      if (data.clear) {
+        data.clear = !data.clear
+        data.operands = []
       }
       populateDisplay(button)
       break
     case button in operators: // the button button was an operator
-      if (!displayValue && operands.length === 0) return
-      if (displayValue) {
-        operands.push(Number(displayValue))
+      if (!data.displayValue && data.operands.length === 0) return
+      if (data.displayValue) {
+        data.operands.push(Number(data.displayValue))
       }
       clearDisplay()
 
-      if (operands.length === 2) {
-        operate(...operands, operator)
+      if (data.operands.length === 2) {
+        operate(...data.operands, data.operator)
       }
 
-      operator = button
+      data.operator = button
       break
     case button === 'clear': // the button button was CLR
-      operands = []
-      operator = ''
+      data.operands = []
+      data.operator = ''
       clearDisplay()
     case button === 'equals': // the button was equals
-      if ((operands.length < 2 && !displayValue) || !operator) return
-      operands.push(Number(displayValue))
+      if ((data.operands.length < 2 && !data.displayValue) || !data.operator) return
+      data.operands.push(Number(data.displayValue))
       clearDisplay()
-      operate(...operands, operator)
+      operate(...data.operands, data.operator)
   }
 }
 
