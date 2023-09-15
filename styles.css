@@ -17,10 +17,12 @@ html {
   flex-direction: column;
   width: 400px;
   height: 750px;
-  margin: 0 auto;
+  margin: 50px auto 0;
   padding: 0px 30px 80px;
   border-bottom-left-radius: 100px;
   border-bottom-right-radius: 100px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .display-wrapper {
@@ -47,9 +49,14 @@ html {
 }
 
 .mini-display {
+  display: flex;
+  justify-content: end;
+  align-items: end;
   background-color: rgb(110, 130, 110);
   width: 90%;
   height: 40%;
+  font-size: 30px;
+  padding: 0 10px;
 }
 
 .calculator-name {
